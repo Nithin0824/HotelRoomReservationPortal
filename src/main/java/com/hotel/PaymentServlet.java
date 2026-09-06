@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.hotel.model.Payment;
 import com.hotel.service.PaymentService;
-import com.hotel.service.ReservationService;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -19,7 +18,6 @@ public class PaymentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private PaymentService paymentService;
-    private ReservationService reservationService;
 
 
     @Override
@@ -27,9 +25,6 @@ public class PaymentServlet extends HttpServlet {
 
         paymentService =
                 new PaymentService();
-
-        reservationService =
-                new ReservationService();
     }
 
 
@@ -48,7 +43,6 @@ public class PaymentServlet extends HttpServlet {
         request.setAttribute(
                 "reservationId",
                 reservationId);
-
 
         request.setAttribute(
                 "amount",
@@ -87,7 +81,6 @@ public class PaymentServlet extends HttpServlet {
                     Integer.parseInt(
                             reservationId);
 
-
             double amountValue =
                     Double.parseDouble(
                             amount);
@@ -103,50 +96,26 @@ public class PaymentServlet extends HttpServlet {
             payment.setReservationId(
                     reservationIdValue);
 
-
             payment.setPaymentMethod(
                     paymentMethod);
 
-
             payment.setAmount(
                     amountValue);
-
 
             payment.setPaymentStatus(
                     "SUCCESS");
 
 
             /*
-             * Save payment.
+             * Complete payment and reservation booking
+             * in ONE database transaction.
              *
-             * This payment belongs to the
-             * EXISTING reservation.
+             * Payment INSERT and reservation UPDATE
+             * will either both succeed or both rollback.
              */
             int paymentId =
-                    paymentService.createPayment(
+                    paymentService.completePayment(
                             payment);
-
-
-            /*
-             * IMPORTANT:
-             *
-             * Update the SAME reservation
-             * from PENDING to BOOKED.
-             *
-             * No new reservation is created.
-             */
-            boolean updated =
-                    reservationService.updateStatus(
-                            reservationIdValue,
-                            "BOOKED");
-
-
-            if (!updated) {
-
-                throw new ServletException(
-                        "Payment was saved, but the reservation " +
-                        "could not be changed to BOOKED.");
-            }
 
 
             /*
@@ -157,21 +126,17 @@ public class PaymentServlet extends HttpServlet {
                     "paymentId",
                     paymentId);
 
-
             request.setAttribute(
                     "reservationId",
                     reservationIdValue);
-
 
             request.setAttribute(
                     "paymentMethod",
                     paymentMethod);
 
-
             request.setAttribute(
                     "amount",
                     amountValue);
-
 
             request.setAttribute(
                     "paymentStatus",
@@ -192,6 +157,13 @@ public class PaymentServlet extends HttpServlet {
 
             throw new ServletException(
                     "Invalid payment details.",
+                    e);
+
+        } catch (RuntimeException e) {
+
+            throw new ServletException(
+                    "Payment could not be completed. " +
+                    "The reservation was not changed.",
                     e);
         }
     }
