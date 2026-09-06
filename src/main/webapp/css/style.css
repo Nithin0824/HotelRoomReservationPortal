@@ -1,0 +1,596 @@
+/* Reservation Page */
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.page-header p {
+    color: #6b7280;
+}
+
+.reservation-card {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.reservation-card h2 {
+    color: #1f2937;
+    margin-bottom: 25px;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.detail-item {
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 10px;
+    border-left: 4px solid #2563eb;
+}
+
+.detail-item span,
+.total-item span {
+    display: block;
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.detail-item strong {
+    color: #111827;
+    font-size: 17px;
+}
+
+.total-item {
+    grid-column: 1 / -1;
+    background: #eff6ff;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #2563eb;
+}
+
+.total-item strong {
+    color: #2563eb;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #374151;
+}
+
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+.back-link {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .total-item {
+        grid-column: auto;
+    }
+
+    .reservation-card {
+        padding: 20px;
+    }
+}
+
+
+
+
+
+
+
+/* =========================
+ROOMS PAGE
+========================= */
+
+.hotel-header {
+background: linear-gradient(135deg, #1f3c88, #2563eb);
+color: white;
+padding: 35px 20px;
+text-align: center;
+}
+
+.hotel-header h1 {
+margin: 0 0 8px;
+font-size: 32px;
+}
+
+.hotel-header p {
+margin: 0;
+opacity: 0.9;
+}
+
+.search-summary {
+background: white;
+padding: 25px;
+border-radius: 12px;
+box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+margin-bottom: 30px;
+}
+
+.search-summary h2 {
+margin-top: 0;
+color: #1f3c88;
+}
+
+.details {
+display: flex;
+flex-wrap: wrap;
+gap: 30px;
+}
+
+.detail {
+color: #374151;
+}
+
+.detail strong {
+color: #1f3c88;
+}
+
+.rooms-title {
+color: #1f3c88;
+margin-bottom: 20px;
+}
+
+.rooms {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 25px;
+}
+
+.room-card {
+background: white;
+padding: 28px;
+border-radius: 14px;
+box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+transition: 0.25s ease;
+}
+
+.room-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.room-icon {
+font-size: 45px;
+margin-bottom: 10px;
+}
+
+.room-card h3 {
+color: #1f3c88;
+font-size: 23px;
+margin: 5px 0 8px;
+}
+
+.room-number {
+color: #6b7280;
+margin-bottom: 15px;
+}
+
+.price {
+font-size: 23px;
+font-weight: bold;
+color: #198754;
+margin: 18px 0 22px;
+}
+
+.price span {
+font-size: 14px;
+color: #6b7280;
+font-weight: normal;
+}
+
+.select-button {
+display: block;
+width: 100%;
+box-sizing: border-box;
+padding: 13px;
+background: #1f3c88;
+color: white;
+text-align: center;
+text-decoration: none;
+border-radius: 8px;
+font-weight: bold;
+transition: background 0.2s ease;
+}
+
+.select-button:hover {
+background: #162d68;
+}
+
+.no-rooms {
+grid-column: 1 / -1;
+background: white;
+padding: 40px;
+text-align: center;
+border-radius: 12px;
+box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+color: #6b7280;
+}
+
+.no-rooms h2 {
+color: #1f3c88;
+}
+
+.footer {
+text-align: center;
+padding: 30px;
+color: #6b7280;
+font-size: 14px;
+}
+
+@media (max-width: 600px) {
+
+.hotel-header h1 {
+    font-size: 26px;
+}
+
+.details {
+    flex-direction: column;
+    gap: 12px;
+}
+
+.room-card {
+    padding: 22px;
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.success-message {
+    background: #eaf4ec;
+    color: #198754;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.cancel-section {
+    background: #fff8f8;
+    border: 1px solid #f0cccc;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.cancel-section h2 {
+    color: #b02a37;
+    margin-top: 0;
+}
+
+.cancel-section p {
+    color: #666;
+}
+
+.cancel-button {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.cancel-button:hover {
+    background: #bb2d3b;
+}
+
+.cancelled-message {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.cancelled-message h2 {
+    color: #6c757d;
+    margin-top: 0;
+}
+
+
+
+
+
+.lookup-card {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.lookup-card h2 {
+    margin-bottom: 10px;
+}
+
+.lookup-card p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+
+
+
+
+
+
+.confirmation-card {
+    background: white;
+    max-width: 900px;
+    margin: 35px auto;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.confirmation-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px;
+    background: #198754;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.confirmation-card h1 {
+    color: #198754;
+    margin-bottom: 10px;
+}
+
+.confirmation-text {
+    font-size: 18px;
+    color: #444;
+}
+
+.confirmation-card hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 30px 0;
+}
+
+.confirmation-card h2 {
+    color: #1f3c88;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.confirmation-card .details-grid {
+    text-align: left;
+}
+
+.confirmation-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.confirmation-actions .btn {
+    width: 100%;
+    text-decoration: none;
+    text-align: center;
+}
+
+.confirmation-actions .back-link {
+    margin-top: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.cancellation-card {
+background: white;
+max-width: 700px;
+margin: 35px auto;
+padding: 35px;
+border-radius: 12px;
+box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+text-align: center;
+}
+
+.cancellation-icon {
+width: 70px;
+height: 70px;
+margin: 0 auto 15px;
+background: #dc3545;
+color: white;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 40px;
+font-weight: bold;
+}
+
+.cancellation-card h1 {
+color: #dc3545;
+margin-bottom: 10px;
+}
+
+.cancellation-text {
+font-size: 18px;
+color: #444;
+}
+
+.cancelled-details {
+margin: 25px 0;
+}
+
+.cancelled-details .detail-item {
+text-align: left;
+border-left: 4px solid #dc3545;
+}
+
+.room-message {
+color: #198754;
+font-weight: bold;
+background: #eaf4ec;
+padding: 15px;
+border-radius: 8px;
+}
+
+.cancellation-card hr {
+border: none;
+border-top: 1px solid #ddd;
+margin: 30px 0;
+}
+
+.cancellation-card .confirmation-actions {
+display: flex;
+flex-direction: column;
+gap: 15px;
+align-items: center;
+}
+
+.cancellation-card .confirmation-actions .btn {
+width: 100%;
+text-decoration: none;
+text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+.cancellation-failed-card {
+background: white;
+max-width: 700px;
+margin: 35px auto;
+padding: 35px;
+border-radius: 12px;
+box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+text-align: center;
+}
+
+.failed-icon {
+width: 70px;
+height: 70px;
+margin: 0 auto 15px;
+background: #ffc107;
+color: #333;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 40px;
+font-weight: bold;
+}
+
+.cancellation-failed-card h1 {
+color: #b02a37;
+margin-bottom: 10px;
+}
+
+.failed-message {
+background: #fff8f8;
+border: 1px solid #f0cccc;
+padding: 20px;
+border-radius: 8px;
+margin: 25px 0;
+}
+
+.failed-message p {
+color: #666;
+margin-bottom: 0;
+}
+
+.cancellation-failed-card hr {
+border: none;
+border-top: 1px solid #ddd;
+margin: 30px 0;
+}
+
+
