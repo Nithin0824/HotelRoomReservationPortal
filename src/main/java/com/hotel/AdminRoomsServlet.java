@@ -1,10 +1,10 @@
 package com.hotel;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
+
+import com.hotel.model.Room;
+import com.hotel.service.RoomService;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -18,36 +18,210 @@ public class AdminRoomsServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    private RoomService roomService;
+
+    @Override
+    public void init() throws ServletException {
+        roomService = new RoomService();
+    }
+
+    @Override
     protected void doGet(
             HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        String sql =
-            "SELECT r.ROOM_ID, " +
-            "       r.ROOM_NUMBER, " +
-            "       rt.TYPE_NAME, " +
-            "       rt.BASE_PRICE, " +
-            "       r.STATUS " +
-            "FROM HOTEL_ROOMS r " +
-            "JOIN ROOM_TYPES rt " +
-            "  ON r.TYPE_ID = rt.TYPE_ID " +
-            "ORDER BY r.ROOM_NUMBER";
+        String action =
+                request.getParameter("action");
 
-        try (
-            Connection connection =
-                    DBConnection.getConnection();
+        // Open Add Room page
+        if ("add".equals(action)) {
 
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+            RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "addRoom.jsp");
 
-            ResultSet resultSet =
-                    statement.executeQuery()
-        ) {
+            dispatcher.forward(
+                    request,
+                    response);
+
+            return;
+        }
+
+        // Open Edit Room page
+        if ("edit".equals(action)) {
+
+            try {
+
+                int roomId =
+                        Integer.parseInt(
+                                request.getParameter(
+                                        "roomId"));
+
+                Room room =
+                        roomService.findRoomById(
+                                roomId);
+
+                if (room == null) {
+
+                    throw new ServletException(
+                            "Room not found.");
+                }
+
+                request.setAttribute(
+                        "room",
+                        room);
+
+                RequestDispatcher dispatcher =
+                        request.getRequestDispatcher(
+                                "editRoom.jsp");
+
+                dispatcher.forward(
+                        request,
+                        response);
+
+            } catch (NumberFormatException e) {
+
+                throw new ServletException(
+                        "Invalid room ID.",
+                        e);
+            }
+
+            return;
+        }
+
+        // Default: show room inventory
+        loadRooms(request, response);
+    }
+
+
+    @Override
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action =
+                request.getParameter("action");
+
+        // Add new room
+        if ("add".equals(action)) {
+
+            try {
+
+                int roomNumber =
+                        Integer.parseInt(
+                                request.getParameter(
+                                        "roomNumber"));
+
+                int typeId =
+                        Integer.parseInt(
+                                request.getParameter(
+                                        "typeId"));
+
+                String status =
+                        request.getParameter(
+                                "status");
+
+                boolean added =
+                        roomService.addRoom(
+                                roomNumber,
+                                typeId,
+                                status);
+
+                if (added) {
+
+                    response.sendRedirect(
+                            "AdminRoomsServlet");
+
+                } else {
+
+                    throw new ServletException(
+                            "Room could not be added.");
+                }
+
+            } catch (NumberFormatException e) {
+
+                throw new ServletException(
+                        "Invalid room details.",
+                        e);
+            }
+
+            return;
+        }
+
+
+        // Update existing room
+        if ("edit".equals(action)) {
+
+            try {
+
+                int roomId =
+                        Integer.parseInt(
+                                request.getParameter(
+                                        "roomId"));
+
+                int roomNumber =
+                        Integer.parseInt(
+                                request.getParameter(
+                                        "roomNumber"));
+
+                int typeId =
+                        Integer.parseInt(
+                                request.getParameter(
+                                        "typeId"));
+
+                String status =
+                        request.getParameter(
+                                "status");
+
+                boolean updated =
+                        roomService.updateRoom(
+                                roomId,
+                                roomNumber,
+                                typeId,
+                                status);
+
+                if (updated) {
+
+                    response.sendRedirect(
+                            "AdminRoomsServlet");
+
+                } else {
+
+                    throw new ServletException(
+                            "Room could not be updated.");
+                }
+
+            } catch (NumberFormatException e) {
+
+                throw new ServletException(
+                        "Invalid room details.",
+                        e);
+            }
+
+            return;
+        }
+
+
+        // Default behavior
+        loadRooms(request, response);
+    }
+
+
+    private void loadRooms(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+
+            List<Room> rooms =
+                    roomService.findAllRooms();
 
             request.setAttribute(
-                    "resultSet",
-                    resultSet);
+                    "rooms",
+                    rooms);
 
             RequestDispatcher dispatcher =
                     request.getRequestDispatcher(
@@ -57,19 +231,11 @@ public class AdminRoomsServlet extends HttpServlet {
                     request,
                     response);
 
-        } catch (SQLException e) {
+        } catch (RuntimeException e) {
 
             throw new ServletException(
                     "Error retrieving room information.",
                     e);
         }
-    }
-
-    protected void doPost(
-            HttpServletRequest request,
-            HttpServletResponse response)
-            throws ServletException, IOException {
-
-        doGet(request, response);
     }
 }

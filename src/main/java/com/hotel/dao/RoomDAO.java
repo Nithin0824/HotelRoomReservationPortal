@@ -12,6 +12,7 @@ import com.hotel.model.Room;
 
 public class RoomDAO {
 
+    // Customer: find available rooms for selected dates
     public List<Room> findAvailableRooms(
             String checkIn,
             String checkOut) {
@@ -22,7 +23,8 @@ public class RoomDAO {
             "SELECT r.ROOM_ID, r.ROOM_NUMBER, " +
             "rt.TYPE_NAME, rt.BASE_PRICE, r.STATUS " +
             "FROM HOTEL_ROOMS r " +
-            "JOIN ROOM_TYPES rt ON r.TYPE_ID = rt.TYPE_ID " +
+            "JOIN ROOM_TYPES rt " +
+            "ON r.TYPE_ID = rt.TYPE_ID " +
             "WHERE r.STATUS = 'AVAILABLE' " +
             "AND NOT EXISTS ( " +
             "    SELECT 1 " +
@@ -35,7 +37,9 @@ public class RoomDAO {
             "ORDER BY r.ROOM_ID";
 
         try (
-            Connection connection = DBConnection.getConnection();
+            Connection connection =
+                    DBConnection.getConnection();
+
             PreparedStatement statement =
                     connection.prepareStatement(sql)
         ) {
@@ -43,7 +47,8 @@ public class RoomDAO {
             statement.setString(1, checkIn);
             statement.setString(2, checkOut);
 
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet =
+                    statement.executeQuery();
 
             while (resultSet.next()) {
 
@@ -75,4 +80,247 @@ public class RoomDAO {
 
         return rooms;
     }
+
+
+    // Admin: find all rooms
+    public List<Room> findAllRooms() {
+
+        List<Room> rooms = new ArrayList<>();
+
+        String sql =
+            "SELECT r.ROOM_ID, r.ROOM_NUMBER, " +
+            "rt.TYPE_NAME, rt.BASE_PRICE, r.STATUS " +
+            "FROM HOTEL_ROOMS r " +
+            "JOIN ROOM_TYPES rt " +
+            "ON r.TYPE_ID = rt.TYPE_ID " +
+            "ORDER BY r.ROOM_NUMBER";
+
+        try (
+            Connection connection =
+                    DBConnection.getConnection();
+
+            PreparedStatement statement =
+                    connection.prepareStatement(sql);
+
+            ResultSet resultSet =
+                    statement.executeQuery()
+        ) {
+
+            while (resultSet.next()) {
+
+                Room room = new Room();
+
+                room.setRoomId(
+                        resultSet.getInt("ROOM_ID"));
+
+                room.setRoomNumber(
+                        resultSet.getString("ROOM_NUMBER"));
+
+                room.setTypeName(
+                        resultSet.getString("TYPE_NAME"));
+
+                room.setBasePrice(
+                        resultSet.getDouble("BASE_PRICE"));
+
+                room.setStatus(
+                        resultSet.getString("STATUS"));
+
+                rooms.add(room);
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Error loading room inventory.", e);
+        }
+
+        return rooms;
+    }
+
+
+    // Admin: find one room by ID
+    public Room findRoomById(int roomId) {
+
+        Room room = null;
+
+        String sql =
+            "SELECT r.ROOM_ID, r.ROOM_NUMBER, " +
+            "r.TYPE_ID, rt.TYPE_NAME, rt.BASE_PRICE, r.STATUS " +
+            "FROM HOTEL_ROOMS r " +
+            "JOIN ROOM_TYPES rt " +
+            "ON r.TYPE_ID = rt.TYPE_ID " +
+            "WHERE r.ROOM_ID = ?";
+
+        try (
+            Connection connection =
+                    DBConnection.getConnection();
+
+            PreparedStatement statement =
+                    connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    roomId);
+
+            try (
+                ResultSet resultSet =
+                        statement.executeQuery()
+            ) {
+
+                if (resultSet.next()) {
+
+                    room = new Room();
+
+                    room.setRoomId(
+                            resultSet.getInt("ROOM_ID"));
+
+                    room.setRoomNumber(
+                            resultSet.getString("ROOM_NUMBER"));
+
+                    room.setTypeName(
+                            resultSet.getString("TYPE_NAME"));
+
+                    room.setBasePrice(
+                            resultSet.getDouble("BASE_PRICE"));
+
+                    room.setStatus(
+                            resultSet.getString("STATUS"));
+                }
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Error loading room by ID.", e);
+        }
+
+        return room;
+    }
+
+
+    // Admin: add a new room
+    public boolean addRoom(
+            int roomNumber,
+            int typeId,
+            String status) {
+
+        String sql =
+            "INSERT INTO HOTEL_ROOMS " +
+            "(ROOM_NUMBER, TYPE_ID, STATUS) " +
+            "VALUES (?, ?, ?)";
+
+        try (
+            Connection connection =
+                    DBConnection.getConnection();
+
+            PreparedStatement statement =
+                    connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    roomNumber);
+
+            statement.setInt(
+                    2,
+                    typeId);
+
+            statement.setString(
+                    3,
+                    status);
+
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Error adding room.", e);
+        }
+    }
+
+
+    // Admin: update room details
+    public boolean updateRoom(
+            int roomId,
+            int roomNumber,
+            int typeId,
+            String status) {
+
+        String sql =
+            "UPDATE HOTEL_ROOMS " +
+            "SET ROOM_NUMBER = ?, " +
+            "    TYPE_ID = ?, " +
+            "    STATUS = ? " +
+            "WHERE ROOM_ID = ?";
+
+        try (
+            Connection connection =
+                    DBConnection.getConnection();
+
+            PreparedStatement statement =
+                    connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    roomNumber);
+
+            statement.setInt(
+                    2,
+                    typeId);
+
+            statement.setString(
+                    3,
+                    status);
+
+            statement.setInt(
+                    4,
+                    roomId);
+
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Error updating room.", e);
+        }
+    }
+
+
+    // Admin: update only room availability/status
+    public boolean updateRoomStatus(
+            int roomId,
+            String status) {
+
+        String sql =
+            "UPDATE HOTEL_ROOMS " +
+            "SET STATUS = ? " +
+            "WHERE ROOM_ID = ?";
+
+        try (
+            Connection connection =
+                    DBConnection.getConnection();
+
+            PreparedStatement statement =
+                    connection.prepareStatement(sql)
+        ) {
+
+            statement.setString(
+                    1,
+                    status);
+
+            statement.setInt(
+                    2,
+                    roomId);
+
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Error updating room status.", e);
+        }
+    }
+
 }

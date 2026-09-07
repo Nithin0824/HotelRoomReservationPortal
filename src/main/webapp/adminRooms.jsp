@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+<%@ page import="java.util.List" %>
+<%@ page import="com.hotel.model.Room" %>
+
 <!DOCTYPE html>
 <html>
 
@@ -21,16 +24,27 @@
 
         <h1>🏨 Room Management</h1>
 
-        <p>View hotel room inventory and pricing</p>
+        <p>Add, edit and manage hotel room availability</p>
 
     </div>
 
 
     <div class="reservation-card">
 
+        <h2>Room Inventory</h2>
+        
+         <div style="margin-bottom:20px;">
+
+    <a href="addRoom.jsp" class="back-link">
+        ➕ Add New Room
+    </a>
+
+</div>
+         
+
         <%
-            java.sql.ResultSet resultSet =
-                    (java.sql.ResultSet) request.getAttribute("resultSet");
+            List<Room> rooms =
+                    (List<Room>) request.getAttribute("rooms");
         %>
 
 
@@ -50,6 +64,7 @@
                         <th>Room Type</th>
                         <th>Price per Night</th>
                         <th>Status</th>
+                        <th>Action</th>
 
                     </tr>
 
@@ -59,35 +74,65 @@
                 <tbody>
 
                 <%
-                    while (resultSet.next()) {
+                    if (rooms != null && !rooms.isEmpty()) {
+
+                        for (Room room : rooms) {
                 %>
 
                     <tr>
 
                         <td>
-                            <%= resultSet.getInt("ROOM_ID") %>
+                            <%= room.getRoomId() %>
                         </td>
 
                         <td>
-                            <%= resultSet.getInt("ROOM_NUMBER") %>
+                            <%= room.getRoomNumber() %>
                         </td>
 
                         <td>
-                            <%= resultSet.getString("TYPE_NAME") %>
+                            <%= room.getTypeName() %>
                         </td>
 
                         <td>
                             Rs.
                             <%= String.format(
                                 "%,.0f",
-                                resultSet.getDouble("BASE_PRICE")
+                                room.getBasePrice()
                             ) %>
                         </td>
 
                         <td>
                             <strong>
-                                <%= resultSet.getString("STATUS") %>
+                                <%= room.getStatus() %>
                             </strong>
+                        </td>
+
+                        <td>
+
+                            <a href="AdminRoomsServlet?action=edit&roomId=<%= room.getRoomId() %>"
+                               class="back-link">
+
+                                Edit
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                <%
+                        }
+
+                    } else {
+                %>
+
+                    <tr>
+
+                        <td colspan="6"
+                            style="text-align:center;">
+
+                            No rooms found.
+
                         </td>
 
                     </tr>
