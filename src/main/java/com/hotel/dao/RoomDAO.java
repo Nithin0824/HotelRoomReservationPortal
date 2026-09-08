@@ -137,6 +137,118 @@ public class RoomDAO {
         return rooms;
     }
 
+    
+    
+    
+    
+ // Customer: find available rooms that are higher-priced than current room
+    public List<Room> findUpgradeRooms(
+            int currentRoomId,
+            String checkIn,
+            String checkOut) {
+
+        List<Room> rooms = new ArrayList<>();
+
+        String sql =
+            "SELECT r.ROOM_ID, r.ROOM_NUMBER, " +
+            "rt.TYPE_NAME, rt.BASE_PRICE, r.STATUS " +
+            "FROM HOTEL_ROOMS r " +
+            "JOIN ROOM_TYPES rt " +
+            "ON r.TYPE_ID = rt.TYPE_ID " +
+            "WHERE r.STATUS = 'AVAILABLE' " +
+
+            // Only rooms more expensive than current room
+            "AND rt.BASE_PRICE > ( " +
+            "    SELECT current_rt.BASE_PRICE " +
+            "    FROM HOTEL_ROOMS current_r " +
+            "    JOIN ROOM_TYPES current_rt " +
+            "    ON current_r.TYPE_ID = current_rt.TYPE_ID " +
+            "    WHERE current_r.ROOM_ID = ? " +
+            ") " +
+
+            // Exclude rooms already booked for the reservation dates
+            "AND NOT EXISTS ( " +
+            "    SELECT 1 " +
+            "    FROM RESERVATIONS res " +
+            "    WHERE res.ROOM_ID = r.ROOM_ID " +
+            "    AND res.STATUS = 'BOOKED' " +
+            "    AND TO_DATE(?, 'YYYY-MM-DD') < res.CHECK_OUT " +
+            "    AND TO_DATE(?, 'YYYY-MM-DD') > res.CHECK_IN " +
+            ") " +
+
+            "ORDER BY rt.BASE_PRICE ASC, r.ROOM_NUMBER ASC";
+
+        try (
+            Connection connection =
+                    DBConnection.getConnection();
+
+            PreparedStatement statement =
+                    connection.prepareStatement(sql)
+        ) {
+
+            /*
+             * Parameter 1:
+             * Current room ID.
+             */
+            statement.setInt(
+                    1,
+                    currentRoomId);
+
+            /*
+             * Parameter 2:
+             * Check-out date.
+             */
+            statement.setString(
+                    2,
+                    checkOut);
+
+            /*
+             * Parameter 3:
+             * Check-in date.
+             */
+            statement.setString(
+                    3,
+                    checkIn);
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
+            while (resultSet.next()) {
+
+                Room room = new Room();
+
+                room.setRoomId(
+                        resultSet.getInt("ROOM_ID"));
+
+                room.setRoomNumber(
+                        resultSet.getString("ROOM_NUMBER"));
+
+                room.setTypeName(
+                        resultSet.getString("TYPE_NAME"));
+
+                room.setBasePrice(
+                        resultSet.getDouble("BASE_PRICE"));
+
+                room.setStatus(
+                        resultSet.getString("STATUS"));
+
+                rooms.add(room);
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Error loading upgrade rooms.", e);
+        }
+
+        return rooms;
+    }
+
+    
+    
+    
+    
+    
 
     // Admin: find one room by ID
     public Room findRoomById(int roomId) {
