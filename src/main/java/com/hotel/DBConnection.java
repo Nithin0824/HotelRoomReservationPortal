@@ -22,10 +22,12 @@ public class DBConnection {
                     (Context) initialContext.lookup(
                             "java:comp/env");
 
+           
             DataSource dataSource =
                     (DataSource) environmentContext.lookup(
                             "jdbc/HotelDB");
 
+           
             return dataSource.getConnection();
 
         } catch (NamingException e) {

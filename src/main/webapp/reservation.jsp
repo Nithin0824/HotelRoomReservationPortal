@@ -1,17 +1,25 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.sql.Connection" %>
-<%@ page import="java.sql.PreparedStatement" %>
-<%@ page import="java.sql.ResultSet" %>
-<%@ page import="com.hotel.DBConnection" %>
 
-<!DOCTYPE html> <html> <head>
+<%@ page import="com.hotel.dao.ReservationDAO.RoomDetails" %>
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
 <meta charset="UTF-8">
 
 <title>Hotel Reservation</title>
 
 <link rel="stylesheet" href="css/style.css">
 
-</head> <body> <div class="container">
+</head>
+
+<body>
+
+<div class="container">
+
 <div class="page-header">
 
     <h1>🏨 Hotel Reservation</h1>
@@ -22,68 +30,39 @@
 
 
 <%
-String roomId = (String) request.getAttribute("roomId");
 
-int roomNumber = 0;
-String typeName = "";
-double price = 0;
+RoomDetails roomDetails =
+        (RoomDetails) request.getAttribute("roomDetails");
 
-String sql =
-"SELECT r.ROOM_NUMBER, rt.TYPE_NAME, rt.BASE_PRICE " +
-"FROM HOTEL_ROOMS r " +
-"JOIN ROOM_TYPES rt ON r.TYPE_ID = rt.TYPE_ID " +
-"WHERE r.ROOM_ID = ?";
+String roomId =
+        (String) request.getAttribute("roomId");
 
-try (
-Connection connection = DBConnection.getConnection();
-PreparedStatement statement = connection.prepareStatement(sql)
-) {
+String checkIn =
+        (String) request.getAttribute("checkIn");
 
-statement.setInt(1, Integer.parseInt(roomId));
+String checkOut =
+        (String) request.getAttribute("checkOut");
 
-try (ResultSet resultSet = statement.executeQuery()) {
+String guests =
+        (String) request.getAttribute("guests");
 
-    if (resultSet.next()) {
+int roomNumber =
+        roomDetails.getRoomNumber();
 
-        roomNumber = resultSet.getInt("ROOM_NUMBER");
+String typeName =
+        roomDetails.getTypeName();
 
-        typeName = resultSet.getString("TYPE_NAME");
-
-        price = resultSet.getDouble("BASE_PRICE");
-
-    }
-}
-
-
-} catch (Exception e) {
-
-out.println("<p>Error loading room details.</p>");
-
-e.printStackTrace();
-
-
-}
-
-java.time.LocalDate checkInDate =
-java.time.LocalDate.parse(
-(String) request.getAttribute("checkIn")
-);
-
-java.time.LocalDate checkOutDate =
-java.time.LocalDate.parse(
-(String) request.getAttribute("checkOut")
-);
+double price =
+        roomDetails.getPrice();
 
 long numberOfNights =
-java.time.temporal.ChronoUnit.DAYS.between(
-checkInDate,
-checkOutDate
-);
+        (Long) request.getAttribute("numberOfNights");
 
 double totalAmount =
-numberOfNights * price;
+        (Double) request.getAttribute("totalAmount");
 
 %>
+
 
 <div class="reservation-card">
 
@@ -131,7 +110,7 @@ numberOfNights * price;
             <span>Check-in</span>
 
             <strong>
-                <%= request.getAttribute("checkIn") %>
+                <%= checkIn %>
             </strong>
 
         </div>
@@ -142,7 +121,7 @@ numberOfNights * price;
             <span>Check-out</span>
 
             <strong>
-                <%= request.getAttribute("checkOut") %>
+                <%= checkOut %>
             </strong>
 
         </div>
@@ -153,7 +132,7 @@ numberOfNights * price;
             <span>Guests</span>
 
             <strong>
-                <%= request.getAttribute("guests") %>
+                <%= guests %>
             </strong>
 
         </div>
@@ -200,17 +179,17 @@ numberOfNights * price;
 
         <input type="hidden"
                name="checkIn"
-               value="<%= request.getAttribute("checkIn") %>">
+               value="<%= checkIn %>">
 
 
         <input type="hidden"
                name="checkOut"
-               value="<%= request.getAttribute("checkOut") %>">
+               value="<%= checkOut %>">
 
 
         <input type="hidden"
                name="guests"
-               value="<%= request.getAttribute("guests") %>">
+               value="<%= guests %>">
 
 
         <div class="form-group">
@@ -241,7 +220,8 @@ numberOfNights * price;
     <br>
 
 
-    <a href="welcome.jsp" class="back-link">
+    <a href="welcome.jsp"
+       class="back-link">
 
         ← Back to Hotel Reservation Portal
 
@@ -250,4 +230,8 @@ numberOfNights * price;
 
 </div>
 
-</div> </body> </html>
+</div>
+
+</body>
+
+</html>

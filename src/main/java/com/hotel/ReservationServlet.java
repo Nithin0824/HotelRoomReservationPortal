@@ -25,53 +25,96 @@ public class ReservationServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-
-        reservationService =
-                new ReservationService();
+        reservationService = new ReservationService();
     }
 
+    @Override
     protected void doGet(
             HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        String roomId =
-                request.getParameter("roomId");
+        String roomId = request.getParameter("roomId");
+        String checkIn = request.getParameter("checkIn");
+        String checkOut = request.getParameter("checkOut");
+        String guests = request.getParameter("guests");
 
-        String checkIn =
-                request.getParameter("checkIn");
+        try {
 
-        String checkOut =
-                request.getParameter("checkOut");
+            int roomIdValue = Integer.parseInt(roomId);
 
-        String guests =
-                request.getParameter("guests");
+            // Get room details through Service → DAO
+            RoomDetails roomDetails =
+                    reservationService.findRoomDetails(roomIdValue);
 
-        request.setAttribute(
-                "roomId",
-                roomId);
+            if (roomDetails == null) {
+                throw new ServletException(
+                        "Room details could not be found.");
+            }
 
-        request.setAttribute(
-                "checkIn",
-                checkIn);
+            // Calculate number of nights
+            LocalDate checkInDate =
+                    LocalDate.parse(checkIn);
 
-        request.setAttribute(
-                "checkOut",
-                checkOut);
+            LocalDate checkOutDate =
+                    LocalDate.parse(checkOut);
 
-        request.setAttribute(
-                "guests",
-                guests);
+            long numberOfNights =
+                    ChronoUnit.DAYS.between(
+                            checkInDate,
+                            checkOutDate);
 
-        RequestDispatcher dispatcher =
-                request.getRequestDispatcher(
-                        "reservation.jsp");
+            // Calculate total amount
+            double totalAmount =
+                    numberOfNights *
+                    roomDetails.getPrice();
 
-        dispatcher.forward(
-                request,
-                response);
+            // Send data to reservation.jsp
+            request.setAttribute(
+                    "roomId",
+                    roomId);
+
+            request.setAttribute(
+                    "roomDetails",
+                    roomDetails);
+
+            request.setAttribute(
+                    "checkIn",
+                    checkIn);
+
+            request.setAttribute(
+                    "checkOut",
+                    checkOut);
+
+            request.setAttribute(
+                    "guests",
+                    guests);
+
+            request.setAttribute(
+                    "numberOfNights",
+                    numberOfNights);
+
+            request.setAttribute(
+                    "totalAmount",
+                    totalAmount);
+
+            RequestDispatcher dispatcher =
+                    request.getRequestDispatcher(
+                            "reservation.jsp");
+
+            dispatcher.forward(
+                    request,
+                    response);
+
+        } catch (NumberFormatException e) {
+
+            throw new ServletException(
+                    "Invalid room ID.",
+                    e);
+        }
     }
 
+    @Override
     protected void doPost(
             HttpServletRequest request,
             HttpServletResponse response)
@@ -91,7 +134,6 @@ public class ReservationServlet extends HttpServlet {
 
         String guests =
                 request.getParameter("guests");
-
 
         /*
          * Store reservation wizard details
@@ -120,7 +162,6 @@ public class ReservationServlet extends HttpServlet {
                 "roomId",
                 roomId);
 
-
         try {
 
             int roomIdValue =
@@ -129,14 +170,12 @@ public class ReservationServlet extends HttpServlet {
             int guestCount =
                     Integer.parseInt(guests);
 
-
             // Check room availability
             boolean alreadyBooked =
                     reservationService.isRoomBooked(
                             roomIdValue,
                             checkIn,
                             checkOut);
-
 
             if (alreadyBooked) {
 
@@ -162,7 +201,6 @@ public class ReservationServlet extends HttpServlet {
                 return;
             }
 
-
             // Create Reservation object
             Reservation reservation =
                     new Reservation();
@@ -182,35 +220,28 @@ public class ReservationServlet extends HttpServlet {
             reservation.setGuests(
                     guestCount);
 
-
             /*
              * New reservations are PENDING.
-             *
-             * The reservation will become BOOKED
-             * only after successful payment.
+             * They become BOOKED after successful payment.
              */
             reservation.setStatus(
                     "PENDING");
-
 
             // Save reservation
             int reservationId =
                     reservationService.createReservation(
                             reservation);
 
-
             // Get room details
             RoomDetails roomDetails =
                     reservationService.findRoomDetails(
                             roomIdValue);
-
 
             if (roomDetails == null) {
 
                 throw new ServletException(
                         "Room details could not be found.");
             }
-
 
             int roomNumber =
                     roomDetails.getRoomNumber();
@@ -221,7 +252,6 @@ public class ReservationServlet extends HttpServlet {
             double price =
                     roomDetails.getPrice();
 
-
             // Calculate number of nights
             LocalDate checkInDate =
                     LocalDate.parse(checkIn);
@@ -229,21 +259,15 @@ public class ReservationServlet extends HttpServlet {
             LocalDate checkOutDate =
                     LocalDate.parse(checkOut);
 
-
             long numberOfNights =
                     ChronoUnit.DAYS.between(
                             checkInDate,
                             checkOutDate);
 
-
             double totalAmount =
                     numberOfNights * price;
 
-
-            /*
-             * Send reservation details to
-             * confirmation.jsp.
-             */
+            // Send reservation details to confirmation.jsp
             request.setAttribute(
                     "reservationId",
                     reservationId);
@@ -284,13 +308,6 @@ public class ReservationServlet extends HttpServlet {
                     "totalAmount",
                     totalAmount);
 
-
-            /*
-             * The reservation is saved as PENDING.
-             *
-             * The user can later use View Reservation
-             * and click Pay Now.
-             */
             RequestDispatcher dispatcher =
                     request.getRequestDispatcher(
                             "confirmation.jsp");
@@ -298,7 +315,6 @@ public class ReservationServlet extends HttpServlet {
             dispatcher.forward(
                     request,
                     response);
-
 
         } catch (NumberFormatException e) {
 
