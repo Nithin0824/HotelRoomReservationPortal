@@ -54,13 +54,19 @@ public class HelloServlet extends HttpServlet {
             return;
         }
 
-        if (guestCount < 1) {
+        if (guestCount < 1  ) {
 
             showError(response,
                     "Number of guests must be at least 1.");
             return;
         }
+        
+        if (guestCount > 5  ) {
 
+            showError(response,
+                    "Number of guests must be less than 5 .");
+            return;
+        }
         LocalDate checkInDate;
         LocalDate checkOutDate;
 

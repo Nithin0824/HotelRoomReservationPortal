@@ -260,13 +260,10 @@ public class UpgradePaymentServlet extends HttpServlet {
 
             /*
              * Complete the upgrade.
-             *
              * This performs:
-             *
              * INSERT upgrade payment
              * +
              * UPDATE reservation ROOM_ID
-             *
              * in ONE transaction.
              */
             int paymentId =

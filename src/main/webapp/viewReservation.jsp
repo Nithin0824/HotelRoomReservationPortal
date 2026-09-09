@@ -163,7 +163,8 @@
 
             <p>
                 Your reservation has been created successfully,
-                but payment has not been completed yet.
+                but payment has not been completed yet;
+                
             </p>
 
             <p>
