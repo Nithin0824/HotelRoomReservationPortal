@@ -24,6 +24,18 @@ public class RoomService {
                 checkOut);
     }
 
+ // Customer: find available higher-priced rooms for upgrade
+    public List<Room> findUpgradeRooms(
+            int currentRoomId,
+            String checkIn,
+            String checkOut) {
+
+        return roomDAO.findUpgradeRooms(
+                currentRoomId,
+                checkIn,
+                checkOut);
+    }
+
 
     // Admin: find all rooms
     public List<Room> findAllRooms() {

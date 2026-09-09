@@ -190,12 +190,11 @@
                     value="<%= request.getAttribute("reservationId") %>"
                 >
 
-             <input
-    type="hidden"
-    name="amount"
-    value="<%= request.getAttribute("amount") %>"
->
-
+                <input
+                    type="hidden"
+                    name="amount"
+                    value="<%= request.getAttribute("amount") %>"
+                >
 
 
                 <button
@@ -235,6 +234,58 @@
 
         </div>
 
+
+        <br>
+
+
+        <!-- ========================= -->
+        <!-- UPGRADE ROOM -->
+        <!-- ========================= -->
+
+        <div class="cancel-section">
+
+            <h2>🔄 Switch / Upgrade Room</h2>
+
+            <p>
+                Want a better room?
+                You can switch to a higher-priced
+                available room by paying only the
+                remaining difference.
+            </p>
+
+
+            <form
+                action="UpgradeRoomServlet"
+                method="get"
+            >
+
+                <input
+                    type="hidden"
+                    name="reservationId"
+                    value="<%= request.getAttribute("reservationId") %>"
+                >
+
+
+                <button
+                    type="submit"
+                    class="btn"
+                >
+
+                    🔄 View Upgrade Rooms
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <br>
+
+
+        <!-- ========================= -->
+        <!-- CANCEL RESERVATION -->
+        <!-- ========================= -->
 
         <div class="cancel-section">
 
