@@ -61,12 +61,7 @@ public class HelloServlet extends HttpServlet {
             return;
         }
         
-        if (guestCount > 5  ) {
-
-            showError(response,
-                    "Number of guests must be less than 5 .");
-            return;
-        }
+      
         LocalDate checkInDate;
         LocalDate checkOutDate;
 
@@ -103,7 +98,10 @@ public class HelloServlet extends HttpServlet {
 
         // Get available rooms through the Service layer
         List<Room> rooms =
-                roomService.findAvailableRooms(checkIn, checkOut);
+                roomService.findAvailableRooms(
+                        checkIn,
+                        checkOut,
+                        guestCount);
 
         // Send room data to rooms.jsp
         request.setAttribute("rooms", rooms);

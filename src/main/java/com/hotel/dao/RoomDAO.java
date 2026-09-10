@@ -1,3 +1,4 @@
+
 package com.hotel.dao;
 
 import java.sql.Connection;
@@ -12,10 +13,11 @@ import com.hotel.model.Room;
 
 public class RoomDAO {
 
-    // Customer: find available rooms for selected dates
+    // Customer: find available rooms for selected dates and guest capacity
     public List<Room> findAvailableRooms(
             String checkIn,
-            String checkOut) {
+            String checkOut,
+            int guestCount) {
 
         List<Room> rooms = new ArrayList<>();
 
@@ -26,6 +28,7 @@ public class RoomDAO {
             "JOIN ROOM_TYPES rt " +
             "ON r.TYPE_ID = rt.TYPE_ID " +
             "WHERE r.STATUS = 'AVAILABLE' " +
+            "AND rt.CAPACITY >= ? " +
             "AND NOT EXISTS ( " +
             "    SELECT 1 " +
             "    FROM RESERVATIONS res " +
@@ -44,32 +47,41 @@ public class RoomDAO {
                     connection.prepareStatement(sql)
         ) {
 
-            statement.setString(1, checkIn);
-            statement.setString(2, checkOut);
+            // 1. Minimum required capacity
+            statement.setInt(1, guestCount);
 
-            ResultSet resultSet =
-                    statement.executeQuery();
+            // 2. Check-in date
+            statement.setString(2, checkIn);
 
-            while (resultSet.next()) {
+            // 3. Check-out date
+            statement.setString(3, checkOut);
 
-                Room room = new Room();
+            try (
+                ResultSet resultSet =
+                        statement.executeQuery()
+            ) {
 
-                room.setRoomId(
-                        resultSet.getInt("ROOM_ID"));
+                while (resultSet.next()) {
 
-                room.setRoomNumber(
-                        resultSet.getString("ROOM_NUMBER"));
+                    Room room = new Room();
 
-                room.setTypeName(
-                        resultSet.getString("TYPE_NAME"));
+                    room.setRoomId(
+                            resultSet.getInt("ROOM_ID"));
 
-                room.setBasePrice(
-                        resultSet.getDouble("BASE_PRICE"));
+                    room.setRoomNumber(
+                            resultSet.getString("ROOM_NUMBER"));
 
-                room.setStatus(
-                        resultSet.getString("STATUS"));
+                    room.setTypeName(
+                            resultSet.getString("TYPE_NAME"));
 
-                rooms.add(room);
+                    room.setBasePrice(
+                            resultSet.getDouble("BASE_PRICE"));
+
+                    room.setStatus(
+                            resultSet.getString("STATUS"));
+
+                    rooms.add(room);
+                }
             }
 
         } catch (SQLException e) {
@@ -137,11 +149,8 @@ public class RoomDAO {
         return rooms;
     }
 
-    
-    
-    
-    
- // Customer: find available rooms that are higher-priced than current room
+
+    // Customer: find available rooms that are higher-priced than current room
     public List<Room> findUpgradeRooms(
             int currentRoomId,
             String checkIn,
@@ -186,53 +195,47 @@ public class RoomDAO {
                     connection.prepareStatement(sql)
         ) {
 
-            /*
-             * Parameter 1:
-             * Current room ID.
-             */
+            // Parameter 1: current room ID
             statement.setInt(
                     1,
                     currentRoomId);
 
-            /*
-             * Parameter 2:
-             * Check-out date.
-             */
+            // Parameter 2: check-out date
             statement.setString(
                     2,
                     checkOut);
 
-            /*
-             * Parameter 3:
-             * Check-in date.
-             */
+            // Parameter 3: check-in date
             statement.setString(
                     3,
                     checkIn);
 
-            ResultSet resultSet =
-                    statement.executeQuery();
+            try (
+                ResultSet resultSet =
+                        statement.executeQuery()
+            ) {
 
-            while (resultSet.next()) {
+                while (resultSet.next()) {
 
-                Room room = new Room();
+                    Room room = new Room();
 
-                room.setRoomId(
-                        resultSet.getInt("ROOM_ID"));
+                    room.setRoomId(
+                            resultSet.getInt("ROOM_ID"));
 
-                room.setRoomNumber(
-                        resultSet.getString("ROOM_NUMBER"));
+                    room.setRoomNumber(
+                            resultSet.getString("ROOM_NUMBER"));
 
-                room.setTypeName(
-                        resultSet.getString("TYPE_NAME"));
+                    room.setTypeName(
+                            resultSet.getString("TYPE_NAME"));
 
-                room.setBasePrice(
-                        resultSet.getDouble("BASE_PRICE"));
+                    room.setBasePrice(
+                            resultSet.getDouble("BASE_PRICE"));
 
-                room.setStatus(
-                        resultSet.getString("STATUS"));
+                    room.setStatus(
+                            resultSet.getString("STATUS"));
 
-                rooms.add(room);
+                    rooms.add(room);
+                }
             }
 
         } catch (SQLException e) {
@@ -244,11 +247,6 @@ public class RoomDAO {
         return rooms;
     }
 
-    
-    
-    
-    
-    
 
     // Admin: find one room by ID
     public Room findRoomById(int roomId) {

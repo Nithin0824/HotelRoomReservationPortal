@@ -14,17 +14,20 @@ public class RoomService {
     }
 
 
-    // Customer: find available rooms
+    // Customer: find available rooms for selected dates and guest capacity
     public List<Room> findAvailableRooms(
             String checkIn,
-            String checkOut) {
+            String checkOut,
+            int guestCount) {
 
         return roomDAO.findAvailableRooms(
                 checkIn,
-                checkOut);
+                checkOut,
+                guestCount);
     }
 
- // Customer: find available higher-priced rooms for upgrade
+
+    // Customer: find available higher-priced rooms for upgrade
     public List<Room> findUpgradeRooms(
             int currentRoomId,
             String checkIn,
